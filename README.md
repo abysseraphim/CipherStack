@@ -1,43 +1,44 @@
-# Cipher Stack
+# CipherStack
 
-> A two-volume technical book series exploring software development foundations and offensive security concepts.
-
-<p align="center">
-  <img src="./assets/frontDevCover.png" width="700">
-</p>
+> A two-volume technical book series on software development and offensive security.
 
 ---
 
-# Citation
+## Why
 
-If you use this work, please cite:
+Most security books teach tools. CipherStack teaches the layer underneath — how software actually works, what makes it vulnerable, and how to think about it from both sides.
 
-Cipher Stack: Dev  
-DOI: 10.5281/zenodo.20754677
-
-Cipher Stack: Offense  
-DOI: 10.5281/zenodo.20945302
+The two volumes are independent but designed to be read together: Dev builds the programming foundation, Offense builds on top of it.
 
 ---
 
-## About
+## Volumes
 
-Cipher Stack is a two-volume technical book series created to provide a structured learning path across software development and offensive security.
+### CipherStack: Dev — 520 pages
 
-The series focuses on building strong technical foundations, understanding how software systems work, and developing the mindset required to analyze and secure modern applications.
+Covers the programming foundations that make everything else possible.
 
-Cipher Stack is divided into two independent but connected volumes:
+Topics span Python, JavaScript, Go, Bash, and PHP — not as syntax references, but as tools for building real things. Each language section ends with real-world projects: a payload generator in Python, an ASN recon tool in Bash, a web crawler in JavaScript, a concurrent HTTP tool in Go, a backend API in PHP.
 
-* **Cipher Stack: Dev**
-* **Cipher Stack: Offense**
+**DOI:** [10.5281/zenodo.20754677](https://doi.org/10.5281/zenodo.20754677)
+
+---
+
+### CipherStack: Offense — 343 pages
+
+Covers offensive web security from recon to exploitation.
+
+Starts with networking fundamentals and builds toward web application attacks: XSS (reflected, stored, DOM, postMessage), SQLi, NoSQL injection, CSRF, authentication flaws, broken access control, cache vulnerabilities, HTTP request smuggling, subdomain takeover, and more. Recon methodology, wide recon automation, and bug bounty workflows are covered in depth.
+
+**DOI:** [10.5281/zenodo.20945302](https://doi.org/10.5281/zenodo.20945302)
 
 ---
 
 ## Sample — XSS: Fuzzing the javascript: Protocol
 
-From **Chapter: XSS** — CipherStack-Offense
+From **CipherStack: Offense**, Chapter: XSS
 
-Running the following in the browser console finds every Unicode character that, when placed between `javascript` and `:`, still produces a valid `javascript:` protocol — useful against filters that rely on `startsWith('javascript:')`:
+Finding every Unicode character that, when placed between `javascript` and `:`, still produces a valid `javascript:` protocol — useful against filters that rely on `startsWith('javascript:')`:
 
 ```javascript
 log = []
@@ -52,104 +53,78 @@ console.log(log);
 log.map(x => String.fromCharCode(x));
 ```
 
-Output reveals characters like `\t` (0x09), `\n` (0x0A) and others that browsers normalize silently — allowing payloads like:
+Output reveals characters like `\t` (0x09) and `\n` (0x0A) that browsers normalize silently — allowing payloads like:
 
 ```html
 <a href="javascript&#x09;:alert(origin)">click</a>
 ```
 
-This pattern appears throughout the book: understand the spec, find what browsers normalize, exploit the gap between what the filter sees and what the browser executes.
+This pattern runs through the whole book: understand the spec, find what the browser normalizes, exploit the gap between what the filter sees and what executes.
 
 ---
 
-# Cipher Stack: Dev
+## Sample — Bash: ASN Recon Tool
 
-## Overview
+From **CipherStack: Dev**, Chapter: Bash Real World Projects
 
-Cipher Stack: Dev focuses on programming and software development foundations.
+Querying RADB for a given ASN and outputting structured JSON — name, description, contact emails, and IP ranges:
 
-The book is designed to help readers understand the building blocks behind modern software systems, from programming fundamentals to practical development concepts.
+```bash
+asn_data=$(whois -h whois.radb.net "AS$asn")
+route_data=$(whois -h whois.radb.net -i origin "AS$asn")
 
-Rather than focusing only on syntax, this volume emphasizes understanding how technologies work and how developers think when building software.
+cat <<EOF
+{
+  "asn": $asn,
+  "name": "$name",
+  "ip_ranges": {
+    "ipv4": [
+$(printf '      "%s",\n' $ipv4_ranges | sed '$ s/,$//')
+    ]
+  }
+}
+EOF
+```
 
-## Main Topics
-
-* Programming fundamentals, including:
-  - Python
-  - JavaScript
-  - Bash
-  - GO
-  - PHP
-* Problem-solving and computational thinking (With Real-World projects)
-* Software development concepts
-* Scripting and automation concepts
-* Web development foundations
-* Understanding application structure
-* Development workflows and practices
-* Building technical foundations for security engineering
-
-Publication:
-
-DOI:
-https://doi.org/10.5281/zenodo.20754677
+Usage: `bash get-asn-details 15169` or `echo 15169 | bash get-asn-details`
 
 ---
 
-# Cipher Stack: Offense
+## Repository Structure
 
-## Overview
-
-Cipher Stack: Offense focuses on offensive security concepts and the mindset behind security assessment.
-
-This volume introduces the concepts required to understand how vulnerabilities appear, how systems are analyzed, and how security professionals approach weaknesses in applications and infrastructure.
-
-The focus is on understanding security concepts rather than relying only on automated tools.
-
-## Main Topics
-
-* Security fundamentals
-* Attacker mindset and methodology
-* Networking concepts for security
-* Web application security concepts
-* Vulnerability analysis concepts
-* Reconnaissance methodology
-* Security testing workflows
-* Understanding common attack surfaces
-* Defensive lessons from offensive techniques
-
-Publication:
-
-DOI:
-https://doi.org/10.5281/zenodo.20945302
-
----
-
-# Repository Structure
-
-```text
+```
 CipherStack/
 │
-├── dev/
-│   ├── CipherStack-Dev.md
-│   └── CipherStack-Dev.pdf
+├── Offense/
+│   ├── CipherStack-Offense.md
+│   └── CipherStack-Offense.pdf
 │
-└── Offense/
-    ├── CipherStack-Offense.md
-    └── CipherStack-Offense.pdf
+└── dev/
+    ├── CipherStack-Dev.md
+    └── CipherStack-Dev.pdf
 ```
 
 ---
 
-# License
+## Citation
 
-This work is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+```
+Cipher Stack: Dev
+DOI: https://doi.org/10.5281/zenodo.20754677
+
+Cipher Stack: Offense
+DOI: https://doi.org/10.5281/zenodo.20945302
+```
 
 ---
 
-# Author
+## License
 
-Soroush Maleki
+Creative Commons Attribution 4.0 International (CC BY 4.0)
 
-Application Security Researcher / Developer
+---
 
+## Author
 
+**Soroush Maleki** — Application Security Researcher / Developer  
+GitHub: [abysseraphim](https://github.com/abysseraphim)
